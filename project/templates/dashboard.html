@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FlexFit Tracker{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Maintenance Dashboard</h2>
+    <a href="{{ url_for('add_ticket') }}" class="btn btn-primary">+ Add New Ticket</a>
+</div>
+
+<!-- Extension Challenge 2: Ticket Statistics -->
+<div class="stats-row">
+    <div class="stat-card">
+        <h3>Total Jobs</h3>
+        <p class="stat-number">{{ total_jobs }}</p>
+    </div>
+    <div class="stat-card stat-open">
+        <h3>Open Jobs</h3>
+        <p class="stat-number">{{ open_jobs }}</p>
+    </div>
+    <div class="stat-card stat-resolved">
+        <h3>Resolved Jobs</h3>
+        <p class="stat-number">{{ resolved_jobs }}</p>
+    </div>
+</div>
+
+<!-- Extension Challenge 1: Search & Filters -->
+<div class="filter-bar">
+    <form action="{{ url_for('dashboard') }}" method="GET" class="filter-form">
+        <input type="text" name="search" placeholder="Search equipment, location or issue..." value="{{ search_query }}">
+        <select name="status">
+            <option value="">All Statuses</option>
+            <option value="Open" {% if status_filter == 'Open' %}selected{% endif %}>Open</option>
+            <option value="Resolved" {% if status_filter == 'Resolved' %}selected{% endif %}>Resolved</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        {% if search_query or status_filter %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-reset">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Tickets Table (SELECT query results) -->
+<div class="table-container">
+    {% if tickets %}
+    <table class="tickets-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Equipment</th>
+                <th>Location</th>
+                <th>Issue Description</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr class="status-row-{{ ticket['status']|lower }}">
+                <td>#{{ ticket['id'] }}</td>
+                <td><strong>{{ ticket['equipment'] }}</strong></td>
+                <td>{{ ticket['location'] }}</td>
+                <td>{{ ticket['issue'] }}</td>
+                <td>
+                    <span class="badge badge-priority-{{ ticket['priority']|lower }}">
+                        {{ ticket['priority'] }}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge badge-status-{{ ticket['status']|lower }}">
+                        {{ ticket['status'] }}
+                    </span>
+                </td>
+                <td>
+                    {% if ticket['status'] == 'Open' %}
+                        <a href="{{ url_for('resolve_ticket', ticket_id=ticket['id']) }}" class="btn btn-sm btn-resolve" onclick="return confirm('Mark this maintenance ticket as Resolved?');">
+                            Resolve Job
+                        </a>
+                    {% else %}
+                        <span class="resolved-text">&#10003; Done</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No maintenance tickets found matching your query.</p>
+        <a href="{{ url_for('add_ticket') }}" class="btn btn-primary">Report New Fault</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

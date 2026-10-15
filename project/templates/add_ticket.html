@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Report Fault - FlexFit Tracker{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-card form-card-wide">
+        <h2>Report Equipment Fault</h2>
+        <p class="form-desc">Fill out the details below to add a new ticket to the database (INSERT query).</p>
+
+        <form action="{{ url_for('add_ticket') }}" method="POST" class="standard-form">
+            <div class="form-group">
+                <label for="equipment">Equipment Name / Machine Type *</label>
+                <input type="text" id="equipment" name="equipment" required placeholder="e.g. Treadmill 3, Dumbbell Rack, Cable Pulley">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Gym Location / Area *</label>
+                <input type="text" id="location" name="location" required placeholder="e.g. Cardio Zone, Ground Floor Studio, Free Weights">
+            </div>
+
+            <div class="form-group">
+                <label for="priority">Priority Level</label>
+                <select id="priority" name="priority">
+                    <option value="Low">Low - Cosmetic or minor wear</option>
+                    <option value="Medium" selected>Medium - Machine partially usable</option>
+                    <option value="High">High - Out of order / safety hazard</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="issue">Fault Description *</label>
+                <textarea id="issue" name="issue" rows="4" required placeholder="Describe what is wrong or damaged with the machine..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Submit Maintenance Ticket</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
